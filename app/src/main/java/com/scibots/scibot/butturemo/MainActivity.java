@@ -17,14 +17,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCIR = (ConsumerIrManager) getSystemService(Context.CONSUMER_IR_SERVICE);
-        if (Build.VERSION.SDK_INT < 16) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
         setContentView(R.layout.activity_main);
 
 
@@ -35,13 +30,25 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "No IR Emitter found\n");
             return;
         }
-        ConsumerIrManager.CarrierFrequencyRange[] freqs = mCIR.getCarrierFrequencies();
-        for (ConsumerIrManager.CarrierFrequencyRange range : freqs) {
-           Log.d(TAG,String.format("    %d - %d\n", range.getMinFrequency(),
-                   range.getMaxFrequency()));
-        }
+        int[] pattern = {625, 4453, 625, 1614, 625, 1588, 625, 1614, 625, 442, 625, 442, 625,
+                468, 625, 442, 625, 494, 572, 1614, 625, 1588, 625, 1614, 625, 494, 572, 442, 651,
+                442, 625, 442, 625, 442, 625, 1614, 625, 1588, 442, 1588, 625, 442, 625, 494, 598,
+                442, 625, 442, 625, 520, 572, 442, 625, 442, 625, 442, 651, 1588, 625, 1614, 625,
+                1588, 625, 1614, 625, 1588, 625, 48958};
+        mCIR.transmit(38400, pattern);
     }
     public void DecVolume(View view) {
+        if (!mCIR.hasIrEmitter()) {
+            Log.e(TAG, "No IR Emitter found\n");
+            return;
+        }
+
+        int[] pattern = {442, 4453, 625, 1614, 625, 1588, 625, 1614, 625, 442, 625, 442, 625,
+                468, 625, 442, 625, 494, 572, 1614, 625, 1588, 625, 1614, 625, 494, 572, 442, 651,
+                442, 625, 442, 625, 442, 625, 1614, 625, 1588, 442, 1588, 625, 442, 625, 494, 598,
+                442, 625, 442, 625, 520, 572, 442, 625, 442, 625, 442, 651, 1588, 625, 1614, 625,
+                1588, 625, 1614, 625, 1588, 625, 48958};
+        mCIR.transmit(38400, pattern);
 
     }
 }
